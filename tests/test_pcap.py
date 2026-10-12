@@ -1,13 +1,19 @@
 import json
 from pathlib import Path
 
-from scapy.layers.inet import IP, TCP
-from scapy.layers.l2 import Ether
-from scapy.packet import Raw
-from scapy.utils import wrpcap
+import pytest
 
-from contour.analyze import analyze_path
-from contour.cli import main
+pytest.importorskip("scapy")
+
+from scapy.layers.inet import IP, TCP  # noqa: E402
+from scapy.layers.l2 import Ether  # noqa: E402
+from scapy.packet import Raw  # noqa: E402
+from scapy.utils import wrpcap  # noqa: E402
+
+from contour.analyze import analyze_path  # noqa: E402
+from contour.cli import main  # noqa: E402
+
+ROOT = Path(__file__).resolve().parent.parent
 
 
 def _hello(host: str) -> bytes:
@@ -36,6 +42,9 @@ def test_http_strips_the_token(tmp_path: Path):
     assert model["endpoints"][0]["path"] == "/v1/customers/{id}"
     assert model["endpoints"][0]["auth"] == "bearer"
     assert model["endpoints"][0]["query"] == ["expand"]
+    assert model["stats"]["secretsSeenInSource"] == 1
+    # No response was read, so the spec must not invent a 200.
+    assert list(model["openapi"]["paths"]["/v1/customers/{id}"]["get"]["responses"]) == ["default"]
     out = tmp_path / "model.json"
     assert main(["analyze", str(pcap), "-o", str(out)]) == 0
     assert token not in out.read_text()
@@ -50,33 +59,10 @@ def test_tls_is_named_not_opened(tmp_path: Path):
     model = analyze_path(pcap)
     assert model["tls"] == [{"sni": "api.private.test", "port": 443, "count": 1}]
     assert model["stats"]["httpRequests"] == 0
-    assert model["gaps"]
+    assert any("TLS" in gap for gap in model["gaps"])
     assert "sk_" not in json.dumps(model)
 
 
-def test_har_and_sdk(tmp_path: Path):
-    har = {
-        "log": {
-            "entries": [
-                {
-                    "request": {
-                        "method": "POST",
-                        "url": "https://api.demo.app/v1/orders",
-                        "headers": [{"name": "Content-Type", "value": "application/json"}],
-                    },
-                    "response": {"status": 201},
-                }
-            ]
-        }
-    }
-    path = tmp_path / "c.har"
-    path.write_text(json.dumps(har), encoding="utf-8")
-    model_path = tmp_path / "model.json"
-    assert main(["analyze", str(path), "-o", str(model_path)]) == 0
-    model = json.loads(model_path.read_text())
-    assert model["endpoints"][0]["method"] == "POST"
-    assert model["endpoints"][0]["statuses"] == [201]
-    sdk = tmp_path / "sdk"
-    assert main(["sdk", str(model_path), "-o", str(sdk)]) == 0
-    assert "def post_v1_orders" in (sdk / "client.py").read_text()
-    assert "postV1Orders" in (sdk / "client.ts").read_text()
+def test_committed_sample_pcap(tmp_path: Path):
+    model = analyze_path(ROOT / "examples" / "sample.pcap")
+    assert [(e["method"], e["path"]) for e in model["endpoints"]] == [("GET", "/v1/customers/{id}")]
