@@ -15,12 +15,12 @@ Compile signals an application already received, on a session the operator is al
 
 ## Workflow
 1. Confirm the written authorization before any capture
-2. Run `python -m contour.cli analyze capture.pcap -o model.json`
-3. Read endpoints and gaps. If the gap says TLS, ask for a HAR of their own session. Do not break the TLS.
-4. Run `python -m contour.cli sdk model.json -o sdk_out` only if the spec is theirs
+2. Run `python3 -m contour analyze capture.har --host api.their-app.com -o model.json --openapi openapi.json` (PCAP/PCAPNG also accepted)
+3. Read endpoints, confidence and gaps. Operations under 0.75 were seen once: ask for another capture of that flow. If a gap says TLS, ask for a HAR of their own session. Do not break the TLS.
+4. Run `python3 -m contour sdk openapi.json -o sdk_out` only if the spec is theirs
 5. The client takes `base_url` and `token` at runtime, supplied by the customer
 
 ## Guardrails
-- Secrets are stripped before the model is written. If one remains, stop.
+- Values never enter the model, only structure. If the CLI refuses with exit code 2, a secret survived: stop.
 - Confidence stays attached to evidence. Gaps stay written.
 - Original expression only. No copied source.

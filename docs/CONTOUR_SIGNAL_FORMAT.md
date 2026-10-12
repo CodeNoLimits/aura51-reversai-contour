@@ -1,5 +1,7 @@
 # Contour Signal Format v0.1
 
+> **Status: draft.** This is the proposed format for contributed signal packs. The CLI does not emit it yet: `contour analyze` writes the model described in [`examples/output/model.json`](../examples/output/model.json).
+
 Normalized representation of application signals for AI reasoning and sharing.
 
 ```json
