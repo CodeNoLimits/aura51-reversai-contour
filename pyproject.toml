@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "contour"
+version = "0.1.0"
+description = "Signal-based reverse engineering analyzer by Aura 51 / ReversAi"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "scapy>=2.5.0",
+]
+
+[project.scripts]
+contour = "contour.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["contour*"]

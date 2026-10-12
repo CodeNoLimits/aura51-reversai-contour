@@ -1,0 +1,4 @@
+scapy>=2.5.0
+pydantic>=2.0
+# Optional: mitmproxy for live capture
+# mitmproxy>=10.0
