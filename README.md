@@ -8,6 +8,8 @@
 
 > Capture the signals an application already received, on a session you are allowed to observe. Compile them into endpoints, gaps, and a client. Do not reconstruct the program.
 
+**Live demo:** [https://crisp-fjord-coral-otter.grok.me](https://crisp-fjord-coral-otter.grok.me)
+
 Contour is an open-source platform and agent skill for **legal reverse engineering via signals**.  
 It normalizes network traffic and local observations, then uses an LLM to approximate protocols, state machines, and functional models without needing (or touching) the binary.
 
@@ -22,6 +24,8 @@ Contour specializes in the **signal layer**:
 - Network flows (PCAP, HAR)
 - What was in clear, and what stayed encrypted
 - A typed client generated from the observed OpenAPI
+- Gaps (TROUS) and coverage metrics
+- Approximate program rules inferred from observed transitions
 
 It does not decrypt TLS, it does not read a consumer subscription as an API, and it does not dump payloads.
 
@@ -30,6 +34,8 @@ It does not decrypt TLS, it does not read a consumer subscription as an API, and
 This repository is the public layer. It is free, runnable, and the thing people can star and show. That is the advertisement.
 
 A paid mission — an OpenAPI spec and a typed SDK in 48 hours, on a session the customer authorizes in writing — is a service. It is not shipped here. A closed tool does not travel, and a chat subscription is not an API.
+
+See the live demo and the [offre page](https://crisp-fjord-coral-otter.grok.me/offre) for the commercial model (Mission 48h · 2 000–3 000 €).
 
 It is complementary to binary tools like [REA](https://github.com/morluto/rea).
 
@@ -58,13 +64,15 @@ Le modèle est l'entrée d'un agent. Le CLI ne prétend pas reconstruire le prog
 ```
 Signals (PCAP / HAR / mitm / local traces)
         ↓
-Contour Normalizer → Contour Signal Format (JSON)
+Contour Normalizer → Contour Signal Format (JSON) + redaction
         ↓
-LLM Reasoning Layer (pluggable: local or cloud)
+OpenAPI 3.1 + gaps (TROUS) + coverage
         ↓
-Model (protocol description, state machine, clean-room notes, OpenAPI sketch)
+SDK generation (client.py / client.ts)
         ↓
-Optional: share anonymized packs on GitHub
+LLM Reasoning Layer (optional refinement)
+        ↓
+Model (protocol description, state machine, approximate program rules)
 ```
 
 ## Legal Guardrails
@@ -81,19 +89,21 @@ See [LEGAL.md](LEGAL.md) for details.
 
 ## Project Structure
 
-- `contour/` — Core analyzer and CLI
+- `contour/` — Core analyzer, redaction, SDK generator and CLI
 - `skills/contour/` — Agent skill definition
 - `docs/` — Format specs and architecture
-- `examples/` — Sample traces and expected outputs
-- `CONTRIBUTING.md` — How to add signal packs and models
+- `examples/` — Sample traces
+- `tests/` — Unit tests
 
 ## Roadmap
 
 - [x] Contour model v0.2 (endpoints, gaps, OpenAPI, redaction)
 - [x] PCAP / PCAPNG / HAR analyzer that refuses to emit secrets
 - [x] SDK generator (`client.py`, `client.ts`)
+- [x] Live frontend demo
 - [ ] Partner packs, after a written authorization
 - [ ] Enterprise features (audit trails, on-prem)
+- [ ] Full browser-based compiler matching the demo UI
 
 ## Contributing
 
