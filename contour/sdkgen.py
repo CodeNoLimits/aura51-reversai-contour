@@ -328,7 +328,7 @@ class _PyTypes:
 
 
 def _py_doc(text: str) -> str:
-    return text.replace("\\", "\\\\").replace('"""', '\\"\\"\\"')
+    return text.replace("\\", "\\\\").replace('"', '\\"')
 
 
 def gen_python(spec: dict, ops: list[dict] | None = None) -> str:

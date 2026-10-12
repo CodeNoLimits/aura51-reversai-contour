@@ -125,3 +125,39 @@ console.log(JSON.stringify(out));
     assert two["path"] == "/v1/orders?limit=2"
     assert three["body"] == {"customer_id": "c", "items": []}
     assert four == {"apiError": True, "status": 404}
+
+
+HOSTILE = {
+    "openapi": "3.1.0",
+    "info": {"title": 'evil""" alert(1) */ `${x}` \\'},
+    "servers": [{"url": "https://h.test/'\"`${x}"}],
+    "paths": {
+        "/a/{x'y}/`b`/${c}": {
+            "get": {
+                "summary": 'ends with a quote"',
+                "parameters": [{"name": "q\"'`", "in": "query"}],
+                "responses": {"200": {"description": "x", "content": {"application/json": {"schema": {
+                    "type": "object",
+                    "properties": {"we\"ird key": {"type": "string", "enum": ["a\"b", "c'd"]}, "class": {"type": "integer"}},
+                }}}}},
+            }
+        }
+    },
+}
+
+
+def test_hostile_spec_cannot_inject_code(tmp_path: Path):
+    py, ts, n = generate(HOSTILE)
+    assert n == 1
+    (tmp_path / "client.py").write_text(py, encoding="utf-8")
+    spec = importlib.util.spec_from_file_location("hostile_client", tmp_path / "client.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    assert [m for m in dir(mod.Client) if not m.startswith("_")] == ["get_a_by_x_y_b_c"]
+    if _node_strips_types():
+        (tmp_path / "client.ts").write_text(ts, encoding="utf-8")
+        (tmp_path / "package.json").write_text('{"type": "module"}', encoding="utf-8")
+        (tmp_path / "check.mjs").write_text('const m = await import("./client.ts"); console.log(Object.keys(m).join(","));', encoding="utf-8")
+        run = subprocess.run(["node", "--experimental-strip-types", "--no-warnings", "check.mjs"], cwd=tmp_path, capture_output=True, text=True, timeout=60)
+        assert run.returncode == 0, run.stderr
+        assert run.stdout.strip() == "ApiError,Client"
