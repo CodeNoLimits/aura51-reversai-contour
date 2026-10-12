@@ -1,16 +1,41 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "contour"
 version = "0.2.0"
-description = "Signal-based reverse engineering analyzer by Aura 51 / ReversAi"
+description = "Turn a HAR/PCAP you're allowed to capture into an OpenAPI 3.1 spec + typed TypeScript/Python SDK"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = [
-    "scapy>=2.5.0",
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Aura 51 / CodeNoLimits" }]
+keywords = ["openapi", "har", "pcap", "sdk-generator", "api-documentation", "typescript", "codegen"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Code Generators",
+    "Topic :: Software Development :: Documentation",
 ]
+# The HAR -> OpenAPI -> SDK path is standard library only.
+dependencies = []
+
+[project.optional-dependencies]
+pcap = ["scapy>=2.5.0"]
+dev = ["scapy>=2.5.0", "pytest>=7"]
+
+[project.urls]
+Homepage = "https://dreamnova.studio/aura51/contour/"
+Repository = "https://github.com/CodeNoLimits/aura51-reversai-contour"
+Issues = "https://github.com/CodeNoLimits/aura51-reversai-contour/issues"
+Changelog = "https://github.com/CodeNoLimits/aura51-reversai-contour/blob/main/CHANGELOG.md"
 
 [project.scripts]
 contour = "contour.cli:main"
@@ -18,3 +43,6 @@ contour = "contour.cli:main"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["contour*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

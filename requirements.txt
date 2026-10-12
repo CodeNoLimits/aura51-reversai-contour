@@ -1,4 +1,2 @@
-scapy>=2.5.0
-pydantic>=2.0
-# Optional: mitmproxy for live capture
-# mitmproxy>=10.0
+# Dev setup (from the repo root): pip install -r requirements.txt
+-e .[dev]

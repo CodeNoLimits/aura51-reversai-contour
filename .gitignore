@@ -8,7 +8,10 @@ env/
 dist/
 build/
 .DS_Store
-model.json
+/model.json
+/openapi.json
+/sdk_out/
+.pytest_cache/
 *.pcap
 !examples/sample.pcap
 *.har
