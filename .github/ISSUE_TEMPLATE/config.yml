@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Report a vulnerability (private)
+    url: https://github.com/CodeNoLimits/aura51-reversai-contour/security/advisories/new
+    about: Secret leaks or code injection through generated clients. Please do not open a public issue.
+  - name: Need a production-grade spec in 48h?
+    url: https://dreamnova.studio/aura51/contour/en/
+    about: Paid mission by Aura 51, under written authorization, with no access to your source code.

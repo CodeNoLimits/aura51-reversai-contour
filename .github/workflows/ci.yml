@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      # Node >= 22.6 runs the generated client.ts end to end (built-in type stripping).
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: pip install -e ".[dev]"
+      - run: python -m pytest -q
+      - name: README quickstart, verbatim
+        run: |
+          python3 -m contour analyze examples/sample.har --openapi openapi.json
+          python3 -m contour sdk openapi.json -o sdk_out
+
+  generated-output:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: pip install mypy==2.4.0 openapi-spec-validator==0.9.0
+      - name: OpenAPI 3.1 spec is valid
+        run: openapi-spec-validator examples/output/openapi.json
+      - name: client.py passes mypy --strict
+        run: mypy --strict --python-version 3.10 examples/output/client.py
+      - name: client.ts passes tsc --strict
+        run: npx --yes -p typescript@5.6.3 tsc --noEmit --strict --target es2022 --lib es2022,dom examples/output/client.ts
