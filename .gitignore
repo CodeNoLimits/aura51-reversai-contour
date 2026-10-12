@@ -18,3 +18,4 @@ build/
 !examples/*.har
 .idea/
 .vscode/
+.mypy_cache/

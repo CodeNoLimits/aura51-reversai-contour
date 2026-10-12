@@ -1,0 +1,65 @@
+name: New signal pack
+description: Propose a compiled model of an API or protocol you are allowed to share
+title: "[signal pack] "
+labels: ["signal-pack"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A signal pack is the **model** Contour produced (`model.json` / `openapi.json`), never the raw capture.
+        Contour models hold structure only (keys, types, status codes), no values. Read [LEGAL.md](https://github.com/CodeNoLimits/aura51-reversai-contour/blob/main/LEGAL.md) first.
+  - type: input
+    id: target
+    attributes:
+      label: Application or protocol
+      placeholder: e.g. the public API of my own side project
+    validations:
+      required: true
+  - type: dropdown
+    id: basis
+    attributes:
+      label: Legal basis for the capture
+      options:
+        - My own application or account
+        - Written authorization from the owner
+        - Public, documented protocol
+        - Interoperability research (explain below)
+    validations:
+      required: true
+  - type: dropdown
+    id: source
+    attributes:
+      label: Capture type
+      options: [HAR, PCAP / PCAPNG, Other]
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Contour version
+      placeholder: output of `python3 -m contour --version`
+    validations:
+      required: true
+  - type: textarea
+    id: flows
+    attributes:
+      label: Flows covered and known gaps
+      description: Paste the summary table and the gaps that Contour printed.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else (provenance, interoperability purpose)
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you submit
+      options:
+        - label: I have the right to share this model.
+          required: true
+        - label: I am attaching the model only. No raw HAR or PCAP, no tokens, no cookies, no personal data.
+          required: true
+        - label: The capture did not bypass authentication, DRM or TLS I do not control.
+          required: true

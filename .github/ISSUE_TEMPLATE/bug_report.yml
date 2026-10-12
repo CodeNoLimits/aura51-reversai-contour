@@ -1,0 +1,25 @@
+name: Bug report
+description: Something Contour did wrong (security issues go to SECURITY.md, not here)
+labels: ["bug"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Contour version and Python version
+      placeholder: contour 0.2.0, Python 3.12
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Command and a synthetic input that reproduces it
+      description: Never paste a real capture. Trim it to a few fake entries.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected, and what happened
+    validations:
+      required: true
