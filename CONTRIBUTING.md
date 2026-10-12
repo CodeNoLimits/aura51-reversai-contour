@@ -18,11 +18,15 @@ Thank you for helping build the signal layer of reverse engineering.
 
 ## Development Setup
 ```bash
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
-pip install -e .
+pip install -r requirements.txt   # editable install + scapy + pytest
+python -m pytest -q
 ```
+
+If you change the analyzer or the SDK generator, regenerate `examples/output/` (commands in [examples/README.md](examples/README.md)). The test suite fails when it is stale.
+
+To propose a signal pack, open a **New signal pack** issue. Share the `model.json` Contour produced, never the raw capture.
 
 ## Pull Request Process
 1. Fork the repo
