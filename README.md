@@ -25,6 +25,12 @@ Contour specializes in the **signal layer**:
 
 It does not decrypt TLS, it does not read a consumer subscription as an API, and it does not dump payloads.
 
+## Two layers
+
+This repository is the public layer. It is free, runnable, and the thing people can star and show. That is the advertisement.
+
+A paid mission — an OpenAPI spec and a typed SDK in 48 hours, on a session the customer authorizes in writing — is a service. It is not shipped here. A closed tool does not travel, and a chat subscription is not an API.
+
 It is complementary to binary tools like [REA](https://github.com/morluto/rea).
 
 ## Quick Start
