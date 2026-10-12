@@ -6,7 +6,7 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![GitHub stars](https://img.shields.io/github/stars/CodeNoLimits/aura51-reversai-contour)](https://github.com/CodeNoLimits/aura51-reversai-contour/stargazers)
 
-> Capture the signals an application emits. Let AI connect the dots. Reconstruct its behavior — legally.
+> Capture the signals an application already received, on a session you are allowed to observe. Compile them into endpoints, gaps, and a client. Do not reconstruct the program.
 
 Contour is an open-source platform and agent skill for **legal reverse engineering via signals**.  
 It normalizes network traffic and local observations, then uses an LLM to approximate protocols, state machines, and functional models without needing (or touching) the binary.
@@ -19,9 +19,11 @@ Most reverse engineering focuses on binaries (Ghidra, IDA, REA, etc.).
 Many valuable systems today are **SaaS, Electron apps, or subscription software** where the interesting part is the protocol and runtime behavior.
 
 Contour specializes in the **signal layer**:
-- Network flows (PCAP, HAR, mitmproxy)
-- Local interactions (when authorized)
-- AI-powered “connect the dots” reasoning
+- Network flows (PCAP, HAR)
+- What was in clear, and what stayed encrypted
+- A typed client generated from the observed OpenAPI
+
+It does not decrypt TLS, it does not read a consumer subscription as an API, and it does not dump payloads.
 
 It is complementary to binary tools like [REA](https://github.com/morluto/rea).
 
@@ -32,15 +34,18 @@ git clone https://github.com/CodeNoLimits/aura51-reversai-contour
 cd aura51-reversai-contour
 
 python -m venv .venv
-source .venv/bin/activate   # or .venv\Scripts\activate on Windows
+source .venv/bin/activate   # ou .venv\Scripts\activate sous Windows
 pip install -r requirements.txt
 
-# Analyze a PCAP
-python -m contour.cli analyze examples/sample.pcap --output model.json
-
-# Or use the skill with your agent (Claude, Grok, Cursor, Codex...)
-# See skills/contour/SKILL.md
+python -m contour.cli analyze examples/sample.pcap -o model.json
+python -m contour.cli sdk model.json -o sdk_out
 ```
+
+`analyze` lit un PCAP, un PCAPNG, ou un HAR. Le HTTP en clair devient des endpoints et un OpenAPI 3.1. Le TLS est nommé par le SNI, et les corps restent fermés. Les jetons, cookies et e-mails ne sortent pas dans `model.json`.
+
+`sdk` écrit `client.py` et `client.ts`, sans dépendance, depuis cet OpenAPI. L'URL et le jeton se passent au client au moment de l'appel, sur une API que le client t'a autorisée. Ce n'est pas un passe pour un abonnement grand public.
+
+Le modèle est l'entrée d'un agent. Le CLI ne prétend pas reconstruire le programme.
 
 ## Architecture
 
@@ -78,13 +83,10 @@ See [LEGAL.md](LEGAL.md) for details.
 
 ## Roadmap
 
-- [x] Contour Signal Format v0.1
-- [x] Basic PCAP analyzer
-- [ ] HAR / mitmproxy importers
-- [ ] LLM prompt templates & structured output
-- [ ] Agent skill packaging (Claude Skills / Cursor / Grok)
-- [ ] Example public protocol reconstructions
-- [ ] Partner contribution templates
+- [x] Contour model v0.2 (endpoints, gaps, OpenAPI, redaction)
+- [x] PCAP / PCAPNG / HAR analyzer that refuses to emit secrets
+- [x] SDK generator (`client.py`, `client.ts`)
+- [ ] Partner packs, after a written authorization
 - [ ] Enterprise features (audit trails, on-prem)
 
 ## Contributing

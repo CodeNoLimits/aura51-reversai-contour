@@ -1,10 +1,12 @@
-# Example: Running Contour
+# Exemple
 
 ```bash
-# After installing dependencies
-python -m contour.cli analyze path/to/your.pcap -o model.json
-
-# Then open model.json and feed it to your agent with the Contour skill
+python -m contour.cli analyze examples/sample.pcap -o model.json
+python -m contour.cli analyze ton_fichier.pcap -o model.json
+python -m contour.cli analyze ton_fichier.har -o model.json
+python -m contour.cli sdk model.json -o sdk_out
 ```
 
-For a full LLM reconstruction, provide the model JSON plus any additional context to an agent that has loaded `skills/contour/SKILL.md`.
+`examples/sample.pcap` est une requête HTTP fictive, sans secret. Pour la régénérer : `python examples/make_sample.py`.
+
+Le fichier `model.json` se donne ensuite à un agent avec `skills/contour/SKILL.md`. L'agent ne reçoit pas les corps bruts.

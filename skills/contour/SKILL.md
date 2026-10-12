@@ -1,43 +1,26 @@
 # Contour Skill — Signal Compiler
 
 ## Purpose
-Contour is an agent skill that ingests signals from an application (network traffic and authorized local observations), normalizes them, and helps an LLM reconstruct an approximate functional model of the software.
+Compile signals an application already received, on a session the operator is allowed to observe. Produce endpoints, gaps, and a typed client. Do not reconstruct the program, and do not present the result as a replacement subscription.
 
 ## When to Use
-- You have PCAP, HAR, or mitmproxy captures of software you lawfully use
-- You want a clean-room description of observed behavior for interoperability
-- You are contributing to the Aura 51 / ReversAi partner signal platform
+- A PCAP, PCAPNG, or HAR from a session the operator owns or was authorized in writing to observe
+- An OpenAPI they already hold, to generate `client.py` and `client.ts`
 
-## Inputs
-- Capture files (PCAP, HAR, mitmproxy flows)
-- Optional context: what the application does, known endpoints, user goals
-- Contour Signal Format JSON (if already normalized)
-
-## Outputs
-- Structured summary of endpoints, message patterns, and sequences
-- Approximate protocol model or state machine
-- Clean-room notes or OpenAPI-like sketch
-- Confidence scores and evidence pointers
-- Identified gaps for further signal collection
+## Do not use
+- A consumer subscription (ChatGPT Plus or Max, Claude Max or Pro, or the same pattern) as if it were an API
+- Tokens scraped from a web app
+- TLS decryption of traffic the operator did not key themselves
+- Raw payload dumps, cookies, or live secrets
 
 ## Workflow
-1. Confirm legal basis and authorization
-2. Ingest and normalize signals
-3. Extract features (fields, lengths, sequences, response patterns)
-4. Reason with the LLM to connect the dots
-5. Produce a model with evidence
-6. Iterate or export for sharing
+1. Confirm the written authorization before any capture
+2. Run `python -m contour.cli analyze capture.pcap -o model.json`
+3. Read endpoints and gaps. If the gap says TLS, ask for a HAR of their own session. Do not break the TLS.
+4. Run `python -m contour.cli sdk model.json -o sdk_out` only if the spec is theirs
+5. The client takes `base_url` and `token` at runtime, supplied by the customer
 
-## Mandatory Guardrails
-- Only analyze software you own or are authorized to study
-- Never circumvent technical protection measures
-- Prefer passive observation
-- Output must be original; do not copy protected expression
-- Document provenance
-
-## Integration
-Works with Grok, Claude, Cursor, Codex, and other agents that support skills or MCP.  
-Pairs well with binary tools such as REA for complementary analysis.
-
----
-*Part of Aura 51 / ReversAi — Contour of Potential.*
+## Guardrails
+- Secrets are stripped before the model is written. If one remains, stop.
+- Confidence stays attached to evidence. Gaps stay written.
+- Original expression only. No copied source.

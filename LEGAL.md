@@ -15,6 +15,8 @@ Contour is designed exclusively for lawful reverse engineering.
 - Violating EULAs or contracts that validly restrict reverse engineering
 - Analyzing systems you do not own or lack authorization for
 - Any activity that constitutes unauthorized access under computer fraud laws
+- Treating a consumer subscription (ChatGPT Plus or Max, Claude Max or Pro, and the same pattern elsewhere) as an API
+- Decrypting TLS you did not produce the keys for, or dumping raw payloads, cookies, or tokens
 
 ## Clean-Room Practice
 When contributing models or implementations:
